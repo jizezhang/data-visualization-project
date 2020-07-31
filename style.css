@@ -1,0 +1,42 @@
+.row {
+    display: flex;
+}
+.label{
+    font-size: 0.7em;
+}
+div.tooltip {	
+    position: absolute;			
+    text-align: center;			
+    width: 100px;					
+    height: 50px;					
+    padding: 2px;				
+    font: 12px sans-serif;		
+    background: lightsteelblue;	
+    border: 0px;		
+    border-radius: 8px;			
+    pointer-events: none;			
+}
+.line {
+fill: none;
+stroke: black;
+}
+.annotation.callout.rect path.subject{
+    fill-opacity: .1;
+}
+
+.annotation.rect text {
+    fill: var(--annotation-context-color);
+    font-size: .6em;
+    text-transform: uppercase;
+}
+
+.annotation-note-bg {
+    fill: rgba(0, 0, 0, 0);
+}
+
+:root {
+    --line-chart-color: #607D8B;
+    --annotation-context-color: #00796B;
+    --annotation-above-color: #00BFA5;
+    --annotation-anomaly-color: #E8336D;
+    }
