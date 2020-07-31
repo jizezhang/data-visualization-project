@@ -1,0 +1,66 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="style.css"></link>
+    </head>
+    <body>
+        <div class="row">
+            <div class="column" id="mobility">
+            </div>
+            <div class="column" id="summary">
+                <h1>COVID-19 US Cases Per 1 Million</h1>
+            </div>
+            <div class="column" id="time-series"></div>
+        </div>
+    </body>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="https://unpkg.com/d3-simple-slider"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-annotation/1.12.1/d3-annotation.min.js"></script>
+    <script src="mobility.js"></script>
+    <script src="summary.js"></script>
+    <script src="stateLevel.js"></script>
+    <script>
+        let keys = ["retail_trend", "grocery_trend", "transit_trend"]
+        let startRank = 0
+        let endRank = 30
+
+        async function draw(){
+            const data = await d3.csv("compiled_data2.csv")
+            let rScale = d3.scalePow().exponent(2).domain(d3.extent(data, d => +d.Case_1m)).range([minRadius, maxRadius])
+            let curr = data.filter(d => d.Date == "2020-07-10")
+            let cScale = d3.scaleSequential(d3.interpolateRdYlBu).domain([d3.max(curr, d => +d.Daily_Case_1m), d3.min(data, d => +d.Daily_Case_1m)])
+            // for (key of keys){
+            //     plotMobility(curr, key, cScale)
+            // }
+            plotMobility(curr.filter(d => d.stay_home_days > 0), "stay_home_days", cScale, "Daily_Case_1m")
+            drawSlidebar(curr, startRank, endRank, rScale, cScale)
+            plotSummary(curr, startRank, endRank, rScale, cScale)
+
+            let arcs = d3.selectAll(".arcs")
+              .on("click", function() {
+                    d3.selectAll(".ts").remove()
+                    let root = d3.select("#time-series")
+                    let state = this.id
+                    root.append("h2")
+                        .text("Detailed Trend for " + state)
+                        .attr("class", "ts")
+                    data_state = data.filter(d => d.State == state)
+                    for (key of ["Daily_Case_1m_Change", "retail"]) {
+                        plotTimeSeries(data_state, key, root)
+                    }
+                    // new_tab.document.write('<html><head><title>COVID-19 US State Level</title><link rel="stylesheet" href="styles.css"></head><body>')
+                //   d3.selectAll(".line").remove()
+                //   d3.selectAll(".taxis").remove()
+                //   d3.selectAll(".yaxis").remove()
+
+                //   let state = this.id 
+                //   d3.select("#per-state-text").text("Detailed Trend for " + state)
+                //   let filtered = data.filter(d => d.state == state).filter(d => new Date(d.Date) > new Date(startDate))
+                //   for (key of keys){
+                //     let scales = drawAxis(filtered, key)
+                //     plotTS(filtered, key, scales[0], scales[1])    
+                //   }
+              })
+        }
+        draw()
+    </script>
+</html>
