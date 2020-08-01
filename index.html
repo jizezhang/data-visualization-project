@@ -4,9 +4,9 @@
     </head>
     <body>
         <div class="row">
-            <div class="column" id="mobility">
+            <div class="column" id="mobility" width=500>
             </div>
-            <div class="column" id="summary">
+            <div class="column" id="summary" width=700>
                 <h1>COVID-19 US Cases Per 1 Million</h1>
             </div>
             <div class="column" id="time-series"></div>
@@ -26,12 +26,12 @@
         async function draw(){
             const data = await d3.csv("compiled_data2.csv")
             let rScale = d3.scalePow().exponent(2).domain(d3.extent(data, d => +d.Case_1m)).range([minRadius, maxRadius])
-            let curr = data.filter(d => d.Date == "2020-07-10")
+            let curr = data.filter(d => d.Date == "2020-07-09")
             let cScale = d3.scaleSequential(d3.interpolateRdYlBu).domain([d3.max(curr, d => +d.Daily_Case_1m), d3.min(data, d => +d.Daily_Case_1m)])
-            // for (key of keys){
-            //     plotMobility(curr, key, cScale)
-            // }
-            plotMobility(curr.filter(d => d.stay_home_days > 0), "stay_home_days", cScale, "Daily_Case_1m")
+            
+            plotStayHome(curr, "non_essential_closed_days", cScale, "non essential business closed days", "daily cases per 1m", "How mandantory business closure affects daily cases")
+            plotStayHome(curr, "stay_home_days", cScale, "stay home days", "daily cases per 1m", "How stay home affects daily cases")
+            
             drawSlidebar(curr, startRank, endRank, rScale, cScale)
             plotSummary(curr, startRank, endRank, rScale, cScale)
 
@@ -44,21 +44,16 @@
                         .text("Detailed Trend for " + state)
                         .attr("class", "ts")
                     data_state = data.filter(d => d.State == state)
-                    for (key of ["Daily_Case_1m_Change", "retail"]) {
-                        plotTimeSeries(data_state, key, root)
+                    let titles = {
+                        "Daily_Case_1m": "daily cases per 1m",
+                        "Daily_Case_1m_RoC": "rate of change in daily cases per 1m",
+                        "retail": "retail change compared with baseline",
+                        "grocery": "grocery change compared with baseline",
+                        "transit": "transit change compared with baseline",
                     }
-                    // new_tab.document.write('<html><head><title>COVID-19 US State Level</title><link rel="stylesheet" href="styles.css"></head><body>')
-                //   d3.selectAll(".line").remove()
-                //   d3.selectAll(".taxis").remove()
-                //   d3.selectAll(".yaxis").remove()
-
-                //   let state = this.id 
-                //   d3.select("#per-state-text").text("Detailed Trend for " + state)
-                //   let filtered = data.filter(d => d.state == state).filter(d => new Date(d.Date) > new Date(startDate))
-                //   for (key of keys){
-                //     let scales = drawAxis(filtered, key)
-                //     plotTS(filtered, key, scales[0], scales[1])    
-                //   }
+                    for (key of ["Daily_Case_1m", "Daily_Case_1m_RoC", "retail", "grocery", "transit"]) {
+                        plotTimeSeries(data_state, key, titles[key], root)
+                    }
               })
         }
         draw()

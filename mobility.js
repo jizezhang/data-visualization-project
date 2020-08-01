@@ -1,8 +1,9 @@
-let margin = {top: 40, bottom: 30, left: 60, right: 10}
+let margin = {top: 40, bottom: 50, left: 60, right: 10}
 let height = 400
 let width = 500
 
-function plotMobility(data, key, cScale, measure="Case_1m") {
+function plotStayHome(data_all, key, cScale, xlabel, ylabel, title, measure="Daily_Case_1m") {
+    let data = data_all.filter(d => d[key] > 0)
     d3.select("#mobility")
       .append("div")
       .attr("class", "row")
@@ -10,7 +11,6 @@ function plotMobility(data, key, cScale, measure="Case_1m") {
       .attr("id", "mb-" + key)
       .attr("width", width)
       .attr("height", height)
-      .attr("transform", "translate(0, 200)")
 
     let plot = d3.select("#mb-"+key)
     let w = width - (margin.left + margin.right)
@@ -34,14 +34,21 @@ function plotMobility(data, key, cScale, measure="Case_1m") {
         .attr("x", margin.left-40)
         .attr("y", margin.top)          
         .attr("transform","rotate(-90," + (margin.left - 40) + "," + margin.top + ") translate(-" + (height/2 + 10) + ", 0)")
-        .text(measure);
+        .text(ylabel);
+
+    plot.append("text")
+        .attr("class", "xlabel")
+        .style("text-anchor", "middle") 
+        .attr("x", width / 2)
+        .attr("y", height - margin.bottom / 4)          
+        .text(xlabel);
 
     plot.append("text")
         .attr("class", "title")
         .style("text-anchor", "middle")
         .attr("x", width / 2)
         .attr("y", 30)
-        .text("How stay home affects daily cases")
+        .text(title)
 
     let div = d3.select("body").append("div")	
         .attr("class", "tooltip")				
@@ -61,7 +68,7 @@ function plotMobility(data, key, cScale, measure="Case_1m") {
             div.transition()		
                 .duration(200)		
                 .style("opacity", .9);		
-            div	.html(d.State + '<br/> daily per 1million : ' + d3.format("~s")(d[measure]))	
+            div	.html(d.State + '<br/> daily per 1million : ' + d3.format(".2")(d[measure]))	
                 .style("left", (d3.event.pageX) + "px")		
                 .style("top", (d3.event.pageY - 28) + "px");	
         })					

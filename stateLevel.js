@@ -1,6 +1,6 @@
 
 
-function plotTimeSeries(data, key, root) {
+function plotTimeSeries(data, key, title, root) {
     let margin = {top: 30, bottom: 20, left: 60, right: 10}
     let height = 200
     let width = 500
@@ -44,7 +44,7 @@ function plotTimeSeries(data, key, root) {
         .style("text-anchor", "middle")
         .attr("x", width / 2)
         .attr("y", 20)
-        .text(key)
+        .text(title)
     
     let path = d3.line()
         .x(d => xScale(new Date(d.Date)))

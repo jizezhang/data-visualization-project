@@ -6,12 +6,12 @@ function drawSlidebar(data_all, startRank, endRank, rScale, cScale){
     let txt = d3.select("#summary")
         .append("p")
         
-    txt.text("Top " + (startRank + 1) + " to " + (endRank + 1) + " States (click arc to see details)")
+    txt.html("<p>Top " + (startRank + 1) + " to " + (endRank + 1) + " states with most confirmed cases </br> Click arc to see details for each state </p>")
     
     let slider = d3.select("#summary")
         .append("svg")
         .attr("width", 700)
-        .attr("height", 100)
+        .attr("height", 60)
 
     let sliderbar = d3.sliderBottom().min(1).max(51).width(slider.attr("width") - 2 * margin)
         .step(1)
@@ -53,7 +53,7 @@ function plotSummary(data_all, startRank, endRank, rScale, cScale, measure="Case
         .attr("width", 700)
         .attr("height", 800)
         .append("g")
-        .attr("transform", "translate(" + (maxRadius - 100) + ", " + (maxRadius + 50) + ")")
+        .attr("transform", "translate(" + (maxRadius - 100) + ", " + (maxRadius + 20) + ")")
     
     pie.selectAll("path")
         .data(data)
@@ -63,15 +63,18 @@ function plotSummary(data_all, startRank, endRank, rScale, cScale, measure="Case
         .attr("id", d => d.State)
         .attr("d", (d, i) => addArc(d, i))
         .attr("fill", (d, i) => cScale(+d.Daily_Case_1m))
-        .on("mouseover", function(d) {		
+        .on("mouseover", function(d) {	
+            d3.select(this).style("stroke", "red")
+            .style("stroke-width", "3")	
             div.transition()		
             .duration(200)		
             .style("opacity", .9);		
-            div	.html(d.State + '<br/> per 1million : ' + d3.format("~s")(d[measure]))	
+            div	.html(d.State + '<br/> total per 1m : ' + d3.format("~s")(+d.Case_1m) + '<br/> daily per 1m: ' + d3.format("~s")(+d.Daily_Case_1m))	
                 .style("left", (d3.event.pageX) + "px")		
                 .style("top", (d3.event.pageY - 28) + "px");	
                     })					
-        .on("mouseout", function(d) {		
+        .on("mouseout", function(d) {	
+            d3.select(this).style("stroke", "none");	
             div.transition()		
                 .duration(500)		
                 .style("opacity", 0);	
